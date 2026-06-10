@@ -287,6 +287,23 @@
       </div>
     </div>
 
+    <hr class="divider" />
+
+    <div class="how-it-works">
+      <h3>Test Outbound Call</h3>
+      <p style="color:#4a5568;font-size:13px;margin-bottom:14px;text-align:left">Trigger an automated reminder call to a patient. Enter an appointment ID from a previous booking.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="apptIdInput" type="text" placeholder="Appointment ID (from booking)" style="flex:1;min-width:180px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none" />
+        <select id="callTypeSelect" style="padding:10px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;background:#fff;outline:none">
+          <option value="reminder">Reminder</option>
+          <option value="follow_up">Follow-up</option>
+          <option value="cancellation_confirmation">Cancellation</option>
+        </select>
+        <button onclick="triggerOutbound()" style="background:#3182ce;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer">Call Patient</button>
+      </div>
+      <div id="outboundStatus" style="margin-top:10px;font-size:13px;color:#718096;min-height:20px;text-align:left"></div>
+    </div>
+
     <div class="transcript-panel" id="transcriptPanel">
       <div class="transcript-header">
         <span class="dot green" style="width:6px;height:6px;animation:pulse 1.5s infinite"></span>
@@ -414,6 +431,36 @@
 
     function stopCall() {
       if (vapiInstance) vapiInstance.stop();
+    }
+
+    async function triggerOutbound() {
+      const apptId = document.getElementById("apptIdInput").value.trim();
+      const callType = document.getElementById("callTypeSelect").value;
+      const statusEl = document.getElementById("outboundStatus");
+
+      if (!apptId) { statusEl.textContent = "Please enter an appointment ID."; statusEl.style.color = "#e53e3e"; return; }
+
+      statusEl.textContent = "Initiating call...";
+      statusEl.style.color = "#718096";
+
+      try {
+        const resp = await fetch("/api/v1/outbound/call", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ appointment_id: apptId, call_type: callType }),
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          statusEl.textContent = `✓ Call initiated! Call ID: ${data.call_id}`;
+          statusEl.style.color = "#38a169";
+        } else {
+          statusEl.textContent = `Error: ${data.detail || JSON.stringify(data)}`;
+          statusEl.style.color = "#e53e3e";
+        }
+      } catch (e) {
+        statusEl.textContent = "Request failed: " + e.message;
+        statusEl.style.color = "#e53e3e";
+      }
     }
   </script>
 </body>
