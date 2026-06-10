@@ -12,7 +12,9 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./dental_appointments.db"
 
-    vapi_api_key: str = ""
+    vapi_public_key: str = ""   # browser SDK (web calls)
+    vapi_private_key: str = ""  # REST API (outbound calls, assistant config)
+    vapi_api_key: str = ""      # legacy alias — falls back to private_key if set
     vapi_phone_number_id: str = ""
     vapi_assistant_id: str = ""
     vapi_webhook_secret: str = ""

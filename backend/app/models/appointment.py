@@ -1,4 +1,5 @@
-import uuid
+import random
+import string
 from datetime import datetime
 from enum import Enum as PyEnum
 
@@ -6,6 +7,14 @@ from sqlalchemy import DateTime, Enum, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+
+def _short_id() -> str:
+    """Generate a short 8-char alphanumeric ID that's easy to read aloud (e.g. APT-X7K2M9)."""
+    chars = string.ascii_uppercase + string.digits
+    # Remove visually confusing chars: O/0, I/1, S/5
+    chars = chars.translate(str.maketrans("", "", "O0I1S5"))
+    return "APT-" + "".join(random.choices(chars, k=6))
 
 
 class AppointmentStatus(str, PyEnum):
@@ -31,7 +40,7 @@ class AppointmentType(str, PyEnum):
 class Appointment(Base):
     __tablename__ = "appointments"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(String(20), primary_key=True, default=_short_id)
     patient_id: Mapped[str] = mapped_column(String(36), ForeignKey("patients.id"), index=True)
 
     appointment_datetime: Mapped[datetime] = mapped_column(DateTime, index=True)

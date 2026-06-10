@@ -23,7 +23,9 @@ class OutboundCallRequest(BaseModel):
 
 @router.post("/call")
 async def trigger_outbound_call(data: OutboundCallRequest, db: Session = Depends(get_db)):
-    if not settings.vapi_api_key or not settings.vapi_phone_number_id or not settings.vapi_assistant_id:
+    # Outbound REST calls require the private key
+    private_key = settings.vapi_private_key or settings.vapi_api_key
+    if not private_key or not settings.vapi_phone_number_id or not settings.vapi_assistant_id:
         raise HTTPException(status_code=503, detail="VAPI not configured")
 
     appointment = appointment_service.get_appointment(db, data.appointment_id)
@@ -51,7 +53,7 @@ async def trigger_outbound_call(data: OutboundCallRequest, db: Session = Depends
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"{VAPI_BASE}/call/phone",
-            headers={"Authorization": f"Bearer {settings.vapi_api_key}"},
+            headers={"Authorization": f"Bearer {private_key}"},
             json=payload,
         )
 
