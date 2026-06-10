@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ./backend
+      target: runtime
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://dental:dental@db:5432/dental_db
+      - ENVIRONMENT=development
+      - DEBUG=true
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dental_db
+      POSTGRES_USER: dental
+      POSTGRES_PASSWORD: dental
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dental -d dental_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
