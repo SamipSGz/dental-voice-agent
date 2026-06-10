@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bright Smile Dental Clinic — Voice Agent Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      max-width: 560px;
+      width: 100%;
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 15px;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .capabilities {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .call-btn {
+      background: #38a169;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 16px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s, transform 0.1s;
+      margin-bottom: 12px;
+    }
+
+    .call-btn:hover { background: #2f855a; transform: translateY(-1px); }
+    .call-btn:active { transform: translateY(0); }
+
+    .call-btn.active {
+      background: #e53e3e;
+    }
+
+    .call-btn.active:hover { background: #c53030; }
+
+    .call-hint {
+      color: #a0aec0;
+      font-size: 13px;
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 32px 0;
+    }
+
+    .how-it-works h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #a0aec0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+
+    .steps {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .step-num {
+      background: #ebf8ff;
+      color: #2b6cb0;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step p {
+      color: #4a5568;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .step strong { color: #1a202c; }
+
+    .status-bar {
+      background: #f7fafc;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #718096;
+      margin-bottom: 24px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #a0aec0;
+      flex-shrink: 0;
+    }
+
+    .dot.green { background: #38a169; animation: pulse 1.5s infinite; }
+    .dot.red { background: #e53e3e; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🦷</div>
+    <h1>Bright Smile Dental Clinic</h1>
+    <p class="subtitle">
+      Talk to our AI voice agent directly from your browser.<br>
+      No phone call needed — just click and speak.
+    </p>
+
+    <div class="capabilities">
+      <span class="badge">Book Appointment</span>
+      <span class="badge">Reschedule</span>
+      <span class="badge">Cancel</span>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Click the button below to start a conversation</span>
+    </div>
+
+    <button class="call-btn" id="callBtn" onclick="toggleCall()">
+      <span id="btnIcon">📞</span>
+      <span id="btnText">Start Voice Call</span>
+    </button>
+    <p class="call-hint">Uses your browser microphone &nbsp;·&nbsp; No phone needed</p>
+
+    <hr class="divider" />
+
+    <div class="how-it-works">
+      <h3>How to test</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p>Click <strong>Start Voice Call</strong> and allow microphone access when prompted.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p>Say <strong>"I want to book an appointment"</strong> — the agent will guide you through the process one question at a time.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p>Try <strong>rescheduling</strong> or <strong>cancelling</strong> using the confirmation number or your phone number.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <p>All appointments are stored in a live database. Every booking, change, or cancellation is real.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const VAPI_PUBLIC_KEY = "beedbb96-83a2-428f-8017-938b7ad6b9cb";
+    const ASSISTANT_ID = "e6019ef9-1185-4b3a-ad1f-f8fa46c2bba0";
+
+    let vapi = null;
+    let callActive = false;
+
+    function setStatus(dot, text) {
+      const dotEl = document.getElementById("statusDot");
+      dotEl.className = "dot" + (dot ? " " + dot : "");
+      document.getElementById("statusText").textContent = text;
+    }
+
+    function toggleCall() {
+      if (!callActive) {
+        startCall();
+      } else {
+        stopCall();
+      }
+    }
+
+    function startCall() {
+      const btn = document.getElementById("callBtn");
+      document.getElementById("btnIcon").textContent = "⏳";
+      document.getElementById("btnText").textContent = "Connecting...";
+      btn.disabled = true;
+      setStatus("", "Connecting to voice agent...");
+
+      (function (d, t) {
+        if (window.vapiSDK) { initVapi(); return; }
+        var g = document.createElement(t), s = d.getElementsByTagName(t)[0];
+        g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+        g.onload = initVapi;
+        s.parentNode.insertBefore(g, s);
+      })(document, "script");
+    }
+
+    function initVapi() {
+      vapi = new window.Vapi(VAPI_PUBLIC_KEY);
+
+      vapi.on("call-start", () => {
+        callActive = true;
+        const btn = document.getElementById("callBtn");
+        btn.classList.add("active");
+        btn.disabled = false;
+        document.getElementById("btnIcon").textContent = "📵";
+        document.getElementById("btnText").textContent = "End Call";
+        setStatus("green", "Call in progress — speak now");
+      });
+
+      vapi.on("call-end", () => {
+        callActive = false;
+        const btn = document.getElementById("callBtn");
+        btn.classList.remove("active");
+        btn.disabled = false;
+        document.getElementById("btnIcon").textContent = "📞";
+        document.getElementById("btnText").textContent = "Start Voice Call";
+        setStatus("", "Call ended — click to start a new one");
+        vapi = null;
+      });
+
+      vapi.on("error", (e) => {
+        console.error(e);
+        callActive = false;
+        const btn = document.getElementById("callBtn");
+        btn.classList.remove("active");
+        btn.disabled = false;
+        document.getElementById("btnIcon").textContent = "📞";
+        document.getElementById("btnText").textContent = "Start Voice Call";
+        setStatus("red", "Connection error — please try again");
+        vapi = null;
+      });
+
+      vapi.start(ASSISTANT_ID);
+    }
+
+    function stopCall() {
+      if (vapi) vapi.stop();
+    }
+  </script>
+</body>
+</html>

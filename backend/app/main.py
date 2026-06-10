@@ -1,8 +1,11 @@
-import structlog
 from contextlib import asynccontextmanager
+from pathlib import Path
+
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import Base, engine
@@ -58,3 +61,9 @@ app.include_router(vapi_webhook.router)
 @app.get("/health")
 def health_check():
     return JSONResponse({"status": "healthy", "service": settings.app_name})
+
+
+# Static demo page — mounted last so API routes take priority
+static_dir = Path(__file__).parent / "static"
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

@@ -5,7 +5,6 @@ Simulates the JSON payloads VAPI sends for each tool invocation.
 import json
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-import pytest
 
 TZ = ZoneInfo("America/New_York")
 

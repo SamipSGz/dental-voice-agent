@@ -1,6 +1,5 @@
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
-import pytest
 
 TZ = ZoneInfo("America/New_York")
 

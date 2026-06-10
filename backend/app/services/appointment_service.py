@@ -1,12 +1,17 @@
-from datetime import datetime, date, timedelta, time
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
 
-from app.models.appointment import Appointment, AppointmentStatus
-from app.models.patient import Patient
-from app.schemas.appointment import AppointmentCreate, AppointmentUpdate, AvailabilityResponse, TimeSlot
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
+
 from app.config import get_settings
+from app.models.appointment import Appointment, AppointmentStatus
+from app.schemas.appointment import (
+    AppointmentCreate,
+    AppointmentUpdate,
+    AvailabilityResponse,
+    TimeSlot,
+)
 
 settings = get_settings()
 
