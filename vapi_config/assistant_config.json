@@ -1,0 +1,196 @@
+{
+  "name": "Dental Appointment Assistant",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.3,
+    "systemPrompt": "You are a friendly and professional dental appointment assistant for {{clinicName}}. Your primary job is to help patients schedule, reschedule, or cancel their dental appointments.\n\nGuidelines:\n- Always greet patients warmly and introduce yourself\n- Collect the patient's full name and phone number early in the conversation\n- Before booking, always verify slot availability using the checkAvailability or getNextAvailable tool\n- Confirm all appointment details (date, time, type) before finalizing\n- Speak clearly and at a comfortable pace\n- If a patient seems confused or upset, offer to transfer them to a human representative\n- Never make up availability — always use the tools to check\n- Always read back a confirmation number after booking\n\nClinic hours: Monday–Friday, 9:00 AM – 5:00 PM\nClinic phone: {{clinicPhone}}\n\nWhen you cannot handle a request, say: 'Let me transfer you to one of our team members who can assist you better.'"
+  },
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "21m00Tcm4TlvDq8ikWAM",
+    "stability": 0.5,
+    "similarityBoost": 0.75
+  },
+  "firstMessage": "Hello! Thank you for calling {{clinicName}}. I'm your dental appointment assistant. How can I help you today? I can help you schedule a new appointment, reschedule an existing one, or cancel an appointment.",
+  "endCallMessage": "Thank you for calling {{clinicName}}. Have a wonderful day, and we look forward to seeing you!",
+  "endCallPhrases": [
+    "goodbye",
+    "bye",
+    "thank you bye",
+    "that's all",
+    "I'm done"
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "checkAvailability",
+        "description": "Check available appointment slots for a specific date. Use this before booking to confirm open times.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "Date to check in YYYY-MM-DD format"
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "description": "Appointment duration in minutes (default 30)",
+              "default": 30
+            }
+          },
+          "required": ["date"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getNextAvailable",
+        "description": "Get the next 3 available appointment slots across upcoming days. Use when the patient is flexible on timing.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "duration_minutes": {
+              "type": "integer",
+              "description": "Appointment duration in minutes",
+              "default": 30
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "bookAppointment",
+        "description": "Book a new dental appointment for a patient. Collect all required information before calling this tool.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "patient_first_name": {
+              "type": "string",
+              "description": "Patient's first name"
+            },
+            "patient_last_name": {
+              "type": "string",
+              "description": "Patient's last name"
+            },
+            "patient_phone": {
+              "type": "string",
+              "description": "Patient's phone number (10 digits)"
+            },
+            "patient_email": {
+              "type": "string",
+              "description": "Patient's email address (optional)"
+            },
+            "appointment_datetime": {
+              "type": "string",
+              "description": "Appointment date and time in ISO 8601 format (e.g. 2025-06-15T10:00:00)"
+            },
+            "appointment_type": {
+              "type": "string",
+              "description": "Type of appointment",
+              "enum": ["checkup", "cleaning", "filling", "root_canal", "extraction", "whitening", "consultation", "emergency", "other"],
+              "default": "checkup"
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "description": "Duration in minutes",
+              "default": 30
+            },
+            "notes": {
+              "type": "string",
+              "description": "Any special notes or concerns from the patient"
+            },
+            "insurance_provider": {
+              "type": "string",
+              "description": "Patient's insurance provider (optional)"
+            },
+            "insurance_id": {
+              "type": "string",
+              "description": "Patient's insurance ID number (optional)"
+            }
+          },
+          "required": ["patient_first_name", "patient_last_name", "patient_phone", "appointment_datetime"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "rescheduleAppointment",
+        "description": "Reschedule an existing appointment to a new date and time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "appointment_id": {
+              "type": "string",
+              "description": "Appointment confirmation ID (if patient has it)"
+            },
+            "patient_phone": {
+              "type": "string",
+              "description": "Patient's phone number to look up their appointment"
+            },
+            "new_datetime": {
+              "type": "string",
+              "description": "New appointment date and time in ISO 8601 format"
+            }
+          },
+          "required": ["new_datetime"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "cancelAppointment",
+        "description": "Cancel an existing appointment.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "appointment_id": {
+              "type": "string",
+              "description": "Appointment confirmation ID (if patient has it)"
+            },
+            "patient_phone": {
+              "type": "string",
+              "description": "Patient's phone number to look up their appointment"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Reason for cancellation"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookupPatient",
+        "description": "Look up an existing patient record by phone number to retrieve their information and upcoming appointments.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string",
+              "description": "Patient's phone number"
+            }
+          },
+          "required": ["phone"]
+        }
+      }
+    }
+  ],
+  "serverUrl": "https://unsoulfully-acorned-shawanda.ngrok-free.dev/vapi/webhook",
+  "serverUrlSecret": "your-webhook-secret-here",
+  "hipaaEnabled": false,
+  "recordingEnabled": true,
+  "silenceTimeoutSeconds": 30,
+  "maxDurationSeconds": 600,
+  "backgroundSound": "office",
+  "backchannelingEnabled": true,
+  "backgroundDenoisingEnabled": true
+}
