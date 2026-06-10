@@ -4,8 +4,9 @@ An AI-powered inbound and outbound voice agent for dental appointment management
 
 Patients can **book**, **reschedule**, and **cancel** dental appointments through a natural phone conversation — no app, no website.
 
-**Live demo:** Call **+1 (320) 436-9246**
-> Or test via VAPI dashboard → Assistants → Dental Appointment Assistant → Talk button (no phone needed)
+**Live demo:** [dental-voice-agent-production-154b.up.railway.app](https://dental-voice-agent-production-154b.up.railway.app)
+> Click **Start Voice Call** — works entirely in the browser, no phone needed.
+> To test by phone, call **+1 (320) 436-9246**
 
 ---
 
@@ -67,7 +68,7 @@ VAPI manages the full voice pipeline (STT → LLM → TTS). During a call, whene
 ### 1. Clone and configure
 
 ```bash
-git clone https://github.com/your-username/dental-voice-agent
+git clone https://github.com/SamipSGz/dental-voice-agent
 cd dental-voice-agent
 cp .env.example .env
 # Fill in your VAPI_API_KEY, VAPI_PHONE_NUMBER_ID, VAPI_ASSISTANT_ID
@@ -123,7 +124,8 @@ curl -X PATCH https://api.vapi.ai/assistant/<ASSISTANT_ID> \
 | Variable | Description | Required |
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL or SQLite connection URL | Yes |
-| `VAPI_API_KEY` | VAPI public key | Yes |
+| `VAPI_PUBLIC_KEY` | VAPI public key (browser SDK) | Yes |
+| `VAPI_PRIVATE_KEY` | VAPI private key (REST API / outbound calls) | Yes |
 | `VAPI_PHONE_NUMBER_ID` | VAPI phone number ID | Yes |
 | `VAPI_ASSISTANT_ID` | VAPI assistant ID | Yes |
 | `VAPI_WEBHOOK_SECRET` | HMAC secret for webhook verification | Recommended |
@@ -186,7 +188,7 @@ See [`docs/testing_report.md`](docs/testing_report.md) for full test results and
 ## Production deployment
 
 ```bash
-git clone https://github.com/your-username/dental-voice-agent /opt/dental-voice-agent
+git clone https://github.com/SamipSGz/dental-voice-agent /opt/dental-voice-agent
 cd /opt/dental-voice-agent
 cp .env.example .env.production  # fill in production values
 docker compose -f docker-compose.prod.yml up -d
