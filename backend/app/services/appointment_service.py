@@ -51,16 +51,20 @@ def get_available_slots(db: Session, target_date: date, duration_minutes: int = 
         .all()
     )
 
+    def _naive(dt: datetime) -> datetime:
+        return dt.replace(tzinfo=None) if dt.tzinfo else dt
+
     booked_ranges = [
-        (a.appointment_datetime, a.appointment_datetime + timedelta(minutes=a.duration_minutes))
+        (_naive(a.appointment_datetime), _naive(a.appointment_datetime + timedelta(minutes=a.duration_minutes)))
         for a in existing
     ]
 
     current = start_dt
     while current + timedelta(minutes=duration_minutes) <= end_dt:
         slot_end = current + timedelta(minutes=duration_minutes)
+        cur_naive, end_naive = _naive(current), _naive(slot_end)
         occupied = any(
-            not (slot_end <= b_start or current >= b_end)
+            not (end_naive <= b_start or cur_naive >= b_end)
             for b_start, b_end in booked_ranges
         )
         slots.append(TimeSlot(start_time=current, end_time=slot_end, available=not occupied))
