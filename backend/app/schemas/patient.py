@@ -21,10 +21,11 @@ class PatientBase(BaseModel):
         if len(digits) < 7:
             raise ValueError("Phone number must have at least 7 digits")
         if v.startswith("+"):
-            return v  # already has country code, keep as-is
-        # 10-digit numbers assumed US; shorter numbers kept as-is with + prefix
+            return v  # already has country code
+        if len(digits) == 10 and digits.startswith("98"):
+            return f"+977{digits}"  # Nepal mobile numbers (98xxxxxxxx)
         if len(digits) == 10:
-            return f"+1{digits}"
+            return f"+1{digits}"  # US/Canada default
         return f"+{digits}"
 
 
