@@ -18,9 +18,14 @@ class PatientBase(BaseModel):
     @classmethod
     def normalize_phone(cls, v: str) -> str:
         digits = re.sub(r"\D", "", v)
-        if len(digits) < 10:
-            raise ValueError("Phone number must have at least 10 digits")
-        return f"+1{digits[-10:]}" if not v.startswith("+") else v
+        if len(digits) < 7:
+            raise ValueError("Phone number must have at least 7 digits")
+        if v.startswith("+"):
+            return v  # already has country code, keep as-is
+        # 10-digit numbers assumed US; shorter numbers kept as-is with + prefix
+        if len(digits) == 10:
+            return f"+1{digits}"
+        return f"+{digits}"
 
 
 class PatientCreate(PatientBase):
